@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    /* #one_div {
+        background-color: burlywood;
+    }
+
+    .warp {
+        background-color: rgb(75, 52, 23);
+    } */
+    /* p,span {
+        background-color: cornflowerblue;
+    } */
+
+    /* .warp .one_p {
+        background-color: crimson;
+    } */
+
+    /* .warp>.one_span {
+        background-color: darkgoldenrod;
+    } */
+    .one_p ~ p {
+      background-color: rgb(69, 219, 224);
+    }
+  </style>
+  <body>
+    <div class="warp" id="one_div">
+      <p class="one_p">warp下面的直属p标签</p>
+      <span class="one_span">
+        warp下面的span
+        <p class="two_p">warp下面的span下面的p标签</p>
+      </span>
+      <p>hhhhhh</p>
+    </div>
+  </body>
+</html>
