@@ -1,4 +1,6 @@
-const devBaseURL = 'https://api.apiopen.top/api/sentences';
+const devBaseURL = 'https://api.apiopen.top'; // 名言
+// const devBaseURL = 'http://api.wpbom.com';
+// https://www.juhe.cn/docs/api/id/92
 const proBaseURL = 'https://api.apiopen.top/api/sentences';
 
 export const BASE_URL =
