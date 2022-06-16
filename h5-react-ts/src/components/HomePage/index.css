@@ -1,0 +1,25 @@
+.App {
+}
+
+.layout .ant-layout-header {
+  background-color: rgb(255, 255, 255);
+}
+
+.ant-layout-content {
+  padding: 0px 200px;
+}
+
+.homeContent {
+  display: flex;
+}
+
+.homeContentCenter {
+  width: 700px;
+  /* height: 100px; */
+}
+
+.homeContentRight {
+  flex: 1;
+
+  /* background-color: red; */
+}

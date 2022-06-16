@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -187,25 +185,33 @@ module.exports = function (webpackEnv) {
   };
 
   return {
-    target: ['browserslist'],
+    target: ['browserslist'], // 由于js既可以编写服务器端代码，也可以编写浏览器代码，所以webpack提供了多种部署target
+    // target: ['node'],// webpack在类node.js环境中编辑黛娜
     // Webpack noise constrained to errors and warnings
-    stats: 'errors-warnings',
-    mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
+    stats: 'errors-warnings', // 更精确地控制 bundle 信息该怎么显示
+    // 只在发生错误或有新编译时输出
+    mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development', // 告知webpack使用相应模式的内置优化
     // Stop compilation early in production
     bail: isEnvProduction,
+    //在第一个错误出现时抛出失败结果，而不是容忍它。
+    //默认情况下，当使用 HMR 时，webpack 会将在终端以及浏览器控制台中，以红色文字记录这些错误，但仍然继续进行打包
     devtool: isEnvProduction
       ? shouldUseSourceMap
         ? 'source-map'
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
+    // 控制是否生成，以及如何生产source map
+    // 不同的值会明显影响到构建(build)和重新构建(rebuild)的速度。
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
-    entry: paths.appIndexJs,
+    entry: paths.appIndexJs, // 打包入口文件
+
+    // 打包出口文件
     output: {
       // The build folder.
-      path: paths.appBuild,
+      path: paths.appBuild, // output目录对于一个绝对路径
       // Add /* filename */ comments to generated require()s in the output.
-      pathinfo: isEnvDevelopment,
+      pathinfo: isEnvDevelopment, // 告知 webpack 在 bundle 中引入「所包含模块信息」的相关注释
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
       filename: isEnvProduction
@@ -222,33 +228,46 @@ module.exports = function (webpackEnv) {
       publicPath: paths.publicUrlOrPath,
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
-        ? info =>
+        ? (info) =>
             path
               .relative(paths.appSrc, info.absoluteResourcePath)
               .replace(/\\/g, '/')
         : isEnvDevelopment &&
-          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+          ((info) =>
+            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
     },
     cache: {
-      type: 'filesystem',
+      type: 'filesystem', //'memory' | 'filesystem'将 cache 类型设置为内存或者文件系统
       version: createEnvironmentHash(env.raw),
-      cacheDirectory: paths.appWebpackCache,
-      store: 'pack',
+      cacheDirectory: paths.appWebpackCache, //缓存的。默认为 node_modules/.cache/webpack
+      store: 'pack', //告诉 webpack 什么时候将数据存放在文件系统中
+      // 'pack': 当编译器闲置时候，将缓存数据都存放在一个文件中
       buildDependencies: {
+        // 一个针对构建的额外代码依赖的数组对象
         defaultWebpack: ['webpack/lib/'],
-        config: [__filename],
-        tsconfig: [paths.appTsConfig, paths.appJsConfig].filter(f =>
+        config: [__filename], //获取最新配置以及所有依赖项。
+        tsconfig: [paths.appTsConfig, paths.appJsConfig].filter((f) =>
           fs.existsSync(f)
         ),
       },
     },
     infrastructureLogging: {
-      level: 'none',
+      level: 'none', //开启基础设施日志输出
+      // 'none' - 禁用日志
+      // 'error' - 仅仅显示错误
+      // 'warn' - 仅仅显示错误与告警
+      // 'info' - 显示错误、告警与信息
+      // 'log' - 显示错误、告警，信息，日志信息，组别，清楚。 收缩的组别会在收缩的状态中被显示。
+      // 'verbose' - 输出所有日志除了调试与追踪。收缩的组别会在扩展的状态中被显示。
     },
     optimization: {
-      minimize: isEnvProduction,
+      // 会根据你选择的 mode 来执行不同的优化，
+      // 不过所有的优化还是可以手动配置和重写
+      minimize: isEnvProduction, // 在生产环境下压缩bundle
       minimizer: [
+        //覆盖默认压缩工具(minimizer)
         // This is only used in production mode
+        // 只在生产环境下使用
         new TerserPlugin({
           terserOptions: {
             parse: {
@@ -292,26 +311,19 @@ module.exports = function (webpackEnv) {
         new CssMinimizerPlugin(),
       ],
     },
+    //这些选项能设置模块如何被解析
     resolve: {
-      // This allows you to set a fallback for where webpack should look for modules.
-      // We placed these paths second because we want `node_modules` to "win"
-      // if there are any conflicts. This matches Node resolution mechanism.
-      // https://github.com/facebook/create-react-app/issues/253
+      //告诉 webpack 解析模块时应该搜索的目录
       modules: ['node_modules', paths.appNodeModules].concat(
         modules.additionalModulePaths || []
       ),
-      // These are the reasonable defaults supported by the Node ecosystem.
-      // We also include JSX as a common component filename extension to support
-      // some tools, although we do not recommend using it, see:
-      // https://github.com/facebook/create-react-app/issues/290
-      // `web` extension prefixes have been added for better support
-      // for React Native Web.
+      //尝试按顺序解析这些后缀名
       extensions: paths.moduleFileExtensions
-        .map(ext => `.${ext}`)
-        .filter(ext => useTypeScript || !ext.includes('ts')),
+        .map((ext) => `.${ext}`)
+        .filter((ext) => useTypeScript || !ext.includes('ts')),
+      // 创建 import 或 require 的别名，来确保模块引入变得更简单。
+      // 例如，一些位于 src/ 文件夹下的常用模块：
       alias: {
-        // Support React Native Web
-        // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         'react-native': 'react-native-web',
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {
@@ -321,11 +333,6 @@ module.exports = function (webpackEnv) {
         ...(modules.webpackAliases || {}),
       },
       plugins: [
-        // Prevents users from importing files from outside of src/ (or node_modules/).
-        // This often causes confusion because we only process files within src/ with babel.
-        // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-        // please link the files into your node_modules/ and let module-resolution kick in.
-        // Make sure your source files are compiled, as they will not be processed in any way.
         new ModuleScopePlugin(paths.appSrc, [
           paths.appPackageJson,
           reactRefreshRuntimeEntry,
@@ -419,7 +426,7 @@ module.exports = function (webpackEnv) {
                     },
                   ],
                 ],
-                
+
                 plugins: [
                   isEnvDevelopment &&
                     shouldUseReactRefresh &&
@@ -453,7 +460,7 @@ module.exports = function (webpackEnv) {
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
-                
+
                 // Babel sourcemaps are needed for debugging into node_modules
                 // code.  Without the options below, debuggers like VSCode
                 // show incorrect code and set breakpoints on the wrong lines.
@@ -643,7 +650,7 @@ module.exports = function (webpackEnv) {
             return manifest;
           }, seed);
           const entrypointFiles = entrypoints.main.filter(
-            fileName => !fileName.endsWith('.map')
+            (fileName) => !fileName.endsWith('.map')
           );
 
           return {

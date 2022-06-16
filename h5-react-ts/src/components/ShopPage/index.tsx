@@ -20,12 +20,12 @@ function AboutPage() {
     const res = await getVideoList({ page: 0, size: 2 });
     console.log(res, 'ppppphh');
     // 判断请求是否成功之后，进行赋值
-    const list = res?.data?.result?.list;
-    // const list = res?.data?.result?.list.filter(
-    //   (item: IVideoItem, index: number) => {
-    //     return index === 0;
-    //   }
-    // );
+    // const list = res?.data?.result?.list;
+    const list = res?.data?.result?.list.filter(
+      (item: IVideoItem, index: number) => {
+        return index === 0;
+      }
+    );
     setVideoList(list);
   };
   useEffect(() => {

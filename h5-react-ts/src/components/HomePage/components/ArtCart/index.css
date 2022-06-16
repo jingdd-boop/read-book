@@ -1,0 +1,62 @@
+.artCart {
+  background-color: #fff;
+}
+.artList {
+  display: flex;
+  width: 700px;
+  margin: 20px 0;
+  border-bottom: 1px solid rgb(241, 241, 241);
+  /* border-radius: 50px; */
+  /* box-shadow: 26px 26px 51px #d9d9d9, -26px -26px 51px #ffffff; */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+.artListLeft {
+  flex: 1;
+  padding-right: 20px;
+  text-align: left;
+}
+
+.artListLeft .artListUserName {
+  font-size: 13px;
+  line-height: 22px;
+  color: #4e5969;
+  white-space: nowrap;
+}
+
+.artListLeft .artListTitle {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #1d2129;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.artListLeft .artListBrief {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+  color: #86909c;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.artListRight {
+  width: 200px;
+}
+
+.artListRight img {
+  width: 200px;
+  height: 110px;
+  border-radius: 8px;
+}
